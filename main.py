@@ -58,7 +58,7 @@ class padron:
                        'tipo text,' \
                        'mab text,' \
                        'mc text,' \
-                       'al real  NOT NULL DEFAULT 0.00,' \
+                       'al real NOT NULL DEFAULT 0.00,' \
                        'grup text' \
                        ') ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;'
         self.pad_ret = 'create table if not exists reten (' \
@@ -70,7 +70,7 @@ class padron:
                        'tipo text,' \
                        'mab text,' \
                        'mc text,' \
-                       'al real  NOT NULL DEFAULT 0.00,' \
+                       'al real NOT NULL DEFAULT 0.00,' \
                        'grup text' \
                        ') ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;'
 
@@ -117,34 +117,56 @@ class padron:
 
     def arma(self):
         self.abre()
-        self.crea()
-        self.copia_pad()
+       # self.crea()
+       # self.copia_pad()
         self.exporta()
 
     def cierra(self):
         self.conn.close()
 
     def exporta(self):
+        cont = 0
         self.pad_exp = 'SELECT ' \
-                       'DATE_FORMAT(percep.fp,"%d%m%Y") as f1,DATE_FORMAT(percep.fi,"%d%m%Y") as f2, DATE_FORMAT(percep.ff,"%d%m%Y") as f3, percep.cuit, percep.tipo, percep.mab, percep.mc, percep.al, reten.al, percep.grup' \
+                       'DATE_FORMAT(percep.fp,"%d%m%Y") as f1,DATE_FORMAT(percep.fi,"%d%m%Y") as f2, DATE_FORMAT(percep.ff,"%d%m%Y") as f3, percep.cuit, percep.tipo, percep.mab, percep.mc, percep.al, reten.al, percep.grup,reten.grup' \
                        ' FROM ' \
                        ' percep ' \
                        ' left ' \
                        ' join ' \
                        ' reten ' \
                        ' on ' \
-                       'percep.cuit = reten.cuit'
+                       'percep.cuit = reten.cuit'#  \
                        #' limit ' \
-                       #' 50 '
+                       #' 500'
+
         self.cur.execute(self.pad_exp);
-        with open('PadRentas.txt', 'w', newline='') as csvfile:
+        with open('PadRentas.txt', 'w', newline='\n') as csvfile:
             spamwriter = csv.writer(csvfile, delimiter=';',
                                     quotechar='|', quoting=csv.QUOTE_MINIMAL)
             for row in self.cur:
-            #    if row[8] == None:
-            #        row[8] = 0
-                spamwriter.writerow(row)
+                if row[8] is None:
+                    retencion = 0
+                else:
+                    retencion = row[8]
+                cont += 1
+                sys.stdout.write("\r renglon: " + str(cont))
+                sys.stdout.flush()
 
+                cuit = row[3]
+                fechapublica = row[0]
+                fechavigdesde = row[1]
+                fechavighasta = row[2]
+                tipo = row[4]
+                marca = row[5]
+                cambio = row[6]
+                percepcion = row[7]
+                #retencion = row[8]
+                grupopercepcion = row[9]
+                gruporetencion = row[10]
+                if not gruporetencion:
+                    gruporetencion = grupopercepcion
+
+        #        spamwriter.writerow(row)
+                spamwriter.writerow([fechapublica, fechavigdesde, fechavighasta, cuit, tipo,marca, cambio, percepcion, retencion, grupopercepcion, gruporetencion])
     def __del__(self):
         self.cur.close()
         self.conn.close()
