@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 pypadron
-Copyright (C) 2017 Petrotandil S.A.
+Copyright (C) 2017 Ales Daniel (alesdaniel77@gmail.com) para Petrotandil S.A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ Script para generar padron de rentas de los 2 padronres arma uno por si hay que 
 nueva
 02/01/2017 - Inicial - Daniel
 05/01/2017 - Rearma como corrende cvs - Daniel
+11/01/2017 - Correcion en campo reten percep con decimales se cambia , x . - Daniel
 """
 import sys
 import csv
@@ -89,12 +90,16 @@ class padron:
         fec = anio + "/" + mes +"/"+dia
         return fec
 
+    def anum(self,num):
+        ret = num.replace(",",".")
+        return ret
+
     def copia_pad(self):
         cont = 0;
         with open('Padron_Ret.txt', newline='') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=';')
             for row in spamreader:
-                to_db = [row[0], self.afecha(row[1]), self.afecha(row[2]), self.afecha(row[3]), row[4], row[5], row[6], row[7],row[8], row[9]]
+                to_db = [row[0], self.afecha(row[1]), self.afecha(row[2]), self.afecha(row[3]), row[4], row[5], row[6], row[7],self.anum(row[8]), row[9]]
                 cont += 1
                 sys.stdout.write("\r registro: " + str(cont))
                 sys.stdout.flush()
@@ -108,7 +113,7 @@ class padron:
         with open('Padron_Per.txt', newline='') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=';')
             for row in spamreader:
-                to_db = [row[0],self.afecha(row[1]),self.afecha(row[2]),self.afecha(row[3]),row[4],row[5],row[6],row[7],row[8],row[9]]
+                to_db = [row[0],self.afecha(row[1]),self.afecha(row[2]),self.afecha(row[3]),row[4],row[5],row[6],row[7],self.anum(row[8]),row[9]]
                 cont += 1
                 sys.stdout.write("\r registro: " + str(cont))
                 sys.stdout.flush()
@@ -117,8 +122,8 @@ class padron:
 
     def arma(self):
         self.abre()
-       # self.crea()
-       # self.copia_pad()
+        self.crea()
+        self.copia_pad()
         self.exporta()
 
     def cierra(self):
