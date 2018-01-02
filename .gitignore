@@ -87,3 +87,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+Padron_Ret.txt
+Padron_Per.txt
+PadRentas.ori
+PadRentas.txt
+Importar padron de cuits de rentas.sql

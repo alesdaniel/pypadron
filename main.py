@@ -130,6 +130,7 @@ class padron:
         self.conn.close()
 
     def exporta(self):
+        sys.stdout.write("\n")
         cont = 0
         self.pad_exp = 'SELECT ' \
                        'DATE_FORMAT(percep.fp,"%d%m%Y") as f1,DATE_FORMAT(percep.fi,"%d%m%Y") as f2, DATE_FORMAT(percep.ff,"%d%m%Y") as f3, percep.cuit, percep.tipo, percep.mab, percep.mc, percep.al, reten.al, percep.grup,reten.grup' \
